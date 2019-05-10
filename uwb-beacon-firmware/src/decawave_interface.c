@@ -109,10 +109,10 @@ void decawave_start(void)
     /* Configuration example taken straight from decawave's example. */
     /* TODO: Make it a bit more easy to configure */
     static dwt_config_t config = {
-        5, /* Channel number. */
+        1, /* Channel number. */
         DWT_PRF_64M, /* Pulse repetition frequency. */
-        DWT_PLEN_64, /* Preamble length. Used in TX only. */
-        DWT_PAC8, /* Preamble acquisition chunk size. Used in RX only. */
+        DWT_PLEN_512, /* Preamble length. Used in TX only. */
+        DWT_PAC16, /* Preamble acquisition chunk size. Used in RX only. */
         9, 9, /* Preamble codes (RX, TX) */
         1, /* Non standard Start Frame Delimiter */
         DWT_BR_6M8, /* Data rate. */
