@@ -253,10 +253,12 @@ void uwb_process_incoming_frame(uwb_protocol_handler_t* handler,
 
     /* Checks that the packet is sent to us. The hardware should already do
      * this filter, but checking protects us against misconfigurations. */
+#if 0
     if (dst_addr != handler->address && dst_addr != MAC_802_15_4_BROADCAST_ADDR) {
         trace(TRACE_POINT_REJECTED_PACKET);
         return;
     }
+#endif
 
     /* Measurement advertisement */
     if (seq_num == UWB_SEQ_NUM_ADVERTISEMENT) {
