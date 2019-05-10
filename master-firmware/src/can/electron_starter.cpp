@@ -8,6 +8,20 @@ using DataPacket = cvra::uwb_beacon::DataPacket;
 static uavcan::LazyConstructor<uavcan::Publisher<DataPacket>> data_pub;
 
 static bool electron_started = false;
+static bool electron_start_confirmed = false;
+static bool electron_arrived = false;
+
+static void data_packet_cb(const uavcan::ReceivedDataStructure<DataPacket>& msg)
+{
+    if (msg.src_addr == config_get_integer("/master/electron_uwb_mac")) {
+        if (!electron_start_confirmed && msg.data == "started") {
+            electron_start_confirmed = true;
+        }
+        if (!electron_arrived && msg.data == "arrived") {
+            electron_arrived = true;
+        }
+    }
+}
 
 int electron_starter_init(uavcan::INode& node)
 {
@@ -31,7 +45,9 @@ int electron_starter_init(uavcan::INode& node)
     /* Send a message to the electron every second */
     periodic_timer.startPeriodic(uavcan::MonotonicDuration::fromMSec(1000));
 
-    return 0;
+    static uavcan::Subscriber<DataPacket> subscriber(node);
+
+    return subscriber.start(data_packet_cb);
 }
 
 void electron_starter_start(void)
