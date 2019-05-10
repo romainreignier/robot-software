@@ -34,6 +34,11 @@ bool operator==(const RobotState& lhs, const RobotState& rhs)
     return !memcmp(&lhs, &rhs, sizeof(RobotState));
 }
 
+bool operator!=(const RobotState& lhs, const RobotState& rhs)
+{
+    return !(lhs == rhs);
+}
+
 int state_count_heavy_pucks_in_robot(const RobotState& state)
 {
     int count = 0;

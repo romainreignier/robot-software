@@ -230,12 +230,21 @@ void strategy_order_play_game(strategy_context_t* ctx, RobotState& state)
         for (auto goal : goals) {
             int len = planner.plan(state, *goal, actions, action_count, path, MAX_GOAP_PATH_LEN);
             for (int i = 0; i < len; i++) {
+                auto expected_state = state;
+                path[i]->plan_effects(expected_state);
                 bool success = path[i]->execute(state);
                 messagebus_topic_publish(state_topic, &state, sizeof(state));
                 chThdYield();
                 if (success == false) {
+                    WARNING("Action failed");
                     break; // Break on failure
                 }
+
+                if (expected_state != state) {
+                    WARNING("Result is not what GOAP was promised");
+                    break;
+                }
+
                 if (trajectory_game_has_ended()) {
                     break;
                 }

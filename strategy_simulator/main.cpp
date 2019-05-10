@@ -55,13 +55,23 @@ void run_goal(goap::Goal<RobotState>* goal, std::string name)
     std::cout << "Found a path of length " << std::to_string(len) << " to achieve the " << name << " goal" << std::endl;
     messagebus_topic_publish(&sim::state_topic.topic, &sim::state, sizeof(sim::state));
     for (int i = 0; i < len; i++) {
-        std::cout << std::endl
-                  << "#" << std::to_string(i);
+        std::cout << std::endl << "#" << std::to_string(i);
+
+        /* Prepare expected state */
+        RobotState expected_state;
+        expected_state = sim::state;
+        path[i]->plan_effects(expected_state);
+
         bool success = path[i]->execute(sim::state);
         messagebus_topic_publish(&sim::state_topic.topic, &sim::state, sizeof(sim::state));
         if (success == false) {
             std::cout << "Failed to execute action #" << std::to_string(i) << std::endl;
             break; // Break on failure
+        }
+
+        if (expected_state != sim::state) {
+            std::cout << "State does not match, aborting!" << std::endl;
+            break;
         }
     }
     std::cout << "Score estimate: " << std::to_string(count_score(state)) << std::endl;
