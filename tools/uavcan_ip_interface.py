@@ -10,6 +10,7 @@ import sys
 import fcntl
 import uavcan
 import subprocess
+import logging
 from queue import Queue, Empty
 import threading
 
@@ -29,6 +30,7 @@ def parse_args():
         default="10.0.0.1/24",
         help="IP address of this interface (default 10.0.0.1/24)")
     parser.add_argument("--dsdl", help="Path to DSDL directory", default=DSDL_DIR)
+    parser.add_argument("--verbose", "-v", help="Debug mode", action="store_true")
 
     return parser.parse_args()
 
@@ -68,6 +70,7 @@ def rx_thread(tun_fd, queue):
 
 def node_thread(tun_fd, node, can_to_tap, tap_to_can):
     def msg_callback(event):
+        logging.debug("msg_callback")
         msg = event.message
         can_to_tap.put(msg.data)
 
@@ -95,12 +98,15 @@ def node_thread(tun_fd, node, can_to_tap, tap_to_can):
         msg.dst_addr = 0xffff  # broadcast
         msg.data = list(packet)
 
+        logging.debug("Sent msg over UAVCAN")
+
         node.broadcast(msg)
 
 
 def tx_thread(tun_fd, queue):
     while True:
         packet = queue.get()
+        logging.debug("writing to TUN")
         os.write(tun_fd, bytes(packet))
 
 
@@ -110,6 +116,12 @@ def main():
         print("must run as root.")
         sys.exit(1)
 
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+
     uavcan.load_dsdl(args.dsdl)
 
     tun_fd = open_tun_interface(args.ip_address)
@@ -118,7 +130,7 @@ def main():
     tap_to_can = Queue()
     can_to_tap = Queue()
 
-    print("waiting for packets, press 3x Ctrl-C to stop...")
+    logging.info("waiting for packets, press 3x Ctrl-C to stop...")
 
     rx_thd = threading.Thread(target=rx_thread, args=(tun_fd, tap_to_can))
     tx_thd = threading.Thread(target=tx_thread, args=(tun_fd, can_to_tap))
