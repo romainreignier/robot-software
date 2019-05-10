@@ -171,6 +171,8 @@ static void ranging_thread(void* p)
         }
 
         if (flags & EVENT_DATA_PACKET_READY) {
+            trace(TRACE_POINT_DATA_PACKET_READY);
+
             dwt_forcetrxoff();
             uwb_send_data_packet(&handler, data_packet_dst_mac, data_packet, data_packet_size, frame);
 
@@ -210,6 +212,7 @@ static void frame_rx_timeout_cb(const dwt_cb_data_t* data)
 
     board_led_toggle(BOARD_LED_DEBUG);
     dwt_rxenable(DWT_START_RX_IMMEDIATE);
+    trace(TRACE_POINT_RX_TIMEOUT);
 }
 
 static void frame_rx_error_cb(const dwt_cb_data_t* data)
@@ -218,6 +221,7 @@ static void frame_rx_error_cb(const dwt_cb_data_t* data)
 
     board_led_toggle(BOARD_LED_DEBUG);
     dwt_rxenable(DWT_START_RX_IMMEDIATE);
+    trace(TRACE_POINT_RX_ERROR);
 }
 
 static void anchor_position_received_cb(uint16_t addr, float x, float y, float z)
@@ -272,6 +276,8 @@ static void data_packet_received_cb(const uint8_t* data, size_t size, uint16_t s
     msg.src_mac = src;
     msg.data_size = size;
     memcpy(msg.data, data, size);
+
+    trace(TRACE_POINT_DATA_PACKET_RECEIVED);
 
     messagebus_topic_publish(&data_packet_topic, &msg, sizeof(msg));
 }

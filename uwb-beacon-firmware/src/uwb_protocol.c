@@ -1,5 +1,6 @@
 #include <string.h>
 #include "uwb_protocol.h"
+#include "trace_points.h"
 
 #define MAC_802_15_4_FC_DATA_FRAME (0x1 << 0)
 #define MAC_802_15_4_FC_PAN_ID_COMPRESS (0x1 << 6)
@@ -246,17 +247,20 @@ void uwb_process_incoming_frame(uwb_protocol_handler_t* handler,
 
     /* Checks that the packet comes from the correct PAN. */
     if (pan_id != handler->pan_id) {
+        trace(TRACE_POINT_REJECTED_PAN_ID);
         return;
     }
 
     /* Checks that the packet is sent to us. The hardware should already do
      * this filter, but checking protects us against misconfigurations. */
     if (dst_addr != handler->address && dst_addr != MAC_802_15_4_BROADCAST_ADDR) {
+        trace(TRACE_POINT_REJECTED_PACKET);
         return;
     }
 
     /* Measurement advertisement */
     if (seq_num == UWB_SEQ_NUM_ADVERTISEMENT) {
+        trace(TRACE_POINT_RX_ADVERTISEMENT);
         if (handler->is_anchor == false) {
             // TODO how to properly handle this delay
             uint64_t reply_ts = rx_ts + UWB_DELAY;
@@ -282,6 +286,7 @@ void uwb_process_incoming_frame(uwb_protocol_handler_t* handler,
             uwb_transmit_frame(reply_ts, frame, frame_size);
         }
     } else if (seq_num == UWB_SEQ_NUM_REPLY) {
+        trace(TRACE_POINT_RX_REPLY);
         // TODO how to properly handle this delay
         uint64_t reply_ts = rx_ts + UWB_DELAY;
 
@@ -306,6 +311,7 @@ void uwb_process_incoming_frame(uwb_protocol_handler_t* handler,
         uwb_transmit_frame(reply_ts, frame, frame_size);
 
     } else if (seq_num == UWB_SEQ_NUM_FINALIZATION) {
+        trace(TRACE_POINT_RX_FINALIZATION);
         uint64_t advertisement_tx_ts = read_40bit_int(&frame[0]);
         uint64_t advertisement_rx_ts = read_40bit_int(&frame[5]);
         uint64_t reply_tx_ts = read_40bit_int(&frame[10]);
@@ -339,8 +345,10 @@ void uwb_process_incoming_frame(uwb_protocol_handler_t* handler,
         memcpy(&y, &frame[4], sizeof(float));
         handler->tag_position_received_cb(src_addr, x, y);
     } else if (seq_num == UWB_SEQ_NUM_INITIATE_MEASUREMENT) {
+        trace(TRACE_POINT_RX_INITIATE);
         uwb_send_measurement_advertisement(handler, frame);
     } else if (seq_num == UWB_SEQ_NUM_USER_DATA) {
+        trace(TRACE_POINT_RX_USER_DATA);
         if (handler->user_data_received_cb) {
             handler->user_data_received_cb(frame, frame_size, src_addr, dst_addr);
         }

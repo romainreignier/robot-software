@@ -6,6 +6,7 @@
 #include "ahrs_thread.h"
 #include "ranging_thread.h"
 #include "state_estimation_thread.h"
+#include "trace_points.h"
 
 #include <uavcan/equipment/ahrs/RawIMU.hpp>
 #include <uavcan/equipment/ahrs/Solution.hpp>
@@ -213,5 +214,6 @@ void topics_publisher_spin(Node& node)
             msg.data.push_back(data_msg.data[i]);
         }
         data_packets_pub->broadcast(msg);
+        trace(TRACE_POINT_DATA_PACKET_SENT_TO_CAN);
     }
 }
