@@ -137,39 +137,6 @@ static void ranging_thread(void* p)
             dwt_setrxantennadelay(parameter_integer_get(&uwb_params.antenna_delay));
         }
 
-        if (flags & EVENT_ADVERTISE_TIMER) {
-            if (!handler.is_anchor && nb_anchor_macs > 0) {
-                /* First disable transceiver */
-                dwt_forcetrxoff();
-
-                /* Initiate measurement sequence */
-                uwb_initiate_measurement(&handler, frame, anchor_macs[current_anchor_mac_index]);
-
-                current_anchor_mac_index++;
-                if (current_anchor_mac_index == nb_anchor_macs) {
-                    current_anchor_mac_index = 0;
-                }
-            }
-        }
-
-        if (flags & EVENT_ANCHOR_POSITION_TIMER) {
-            /* Make sure we are an anchor before we send an anchor position
-             * message. */
-            if (!handler.is_anchor) {
-                continue;
-            }
-
-            /* First disable transceiver */
-            dwt_forcetrxoff();
-
-            float x, y, z;
-            x = parameter_scalar_get(&uwb_params.anchor.position.x);
-            y = parameter_scalar_get(&uwb_params.anchor.position.y);
-            z = parameter_scalar_get(&uwb_params.anchor.position.z);
-
-            uwb_send_anchor_position(&handler, x, y, z, frame);
-        }
-
         if (flags & EVENT_DATA_PACKET_READY) {
             trace(TRACE_POINT_DATA_PACKET_READY);
 

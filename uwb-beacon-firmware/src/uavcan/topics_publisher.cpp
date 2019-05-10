@@ -66,10 +66,12 @@ static void topics_watcher(void* p)
      * Maybe it would be better to check in the loop if the topic exists. */
     //imu_topic = messagebus_find_topic_blocking(&bus, "/imu");
 
+    /*
     tag_pos_topic = messagebus_find_topic_blocking(&bus, "/ekf/state");
     messagebus_watchgroup_watch(&watchers[0],
                                 &watchgroup.group,
                                 tag_pos_topic);
+                                */
 
     data_packet_topic = messagebus_find_topic_blocking(&bus, "/uwb_data");
     messagebus_watchgroup_watch(&watchers[1],
