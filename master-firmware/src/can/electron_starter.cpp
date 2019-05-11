@@ -54,3 +54,8 @@ void electron_starter_start(void)
 {
     electron_started = true;
 }
+
+bool electron_is_arrived()
+{
+    return electron_arrived;
+}

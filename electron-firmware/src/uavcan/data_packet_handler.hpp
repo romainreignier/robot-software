@@ -5,6 +5,10 @@
 
 int data_packet_handler_init(uavcan::INode& node);
 
-bool data_packet_start_signal_received(void);
+bool start_received(void);
+
+void robot_notify_started(void);
+
+void robot_notify_arrived(void);
 
 #endif

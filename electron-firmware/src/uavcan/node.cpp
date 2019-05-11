@@ -12,6 +12,7 @@
 #define UAVCAN_RX_QUEUE_SIZE    32
 #define UAVCAN_CAN_BITRATE      1000000UL
 #define UAVCAN_MEMORY_POOL_SIZE 4096
+#define UWB_STREAM_FREQUENCY 5 // 10/5 = 2[Hz]
 
 namespace uavcan_node {
 
@@ -37,7 +38,6 @@ void main(unsigned int id, const char* name)
     int res;
 
     chRegSetThreadName("uavcan");
-
     static CanInterface can;
     res = can.init(UAVCAN_CAN_BITRATE);
     if (res < 0) {
@@ -84,14 +84,19 @@ void main(unsigned int id, const char* name)
             electron_state = READY;
         }
 
-        if (electron_state == READY && data_packet_start_signal_received() && !front_hall_sensor()) {
+        if (electron_state == READY && start_received() && !front_hall_sensor()) {
             electron_state = RUNNING;
             start_timer(timeout, &timed_out);
         }
 
         if (electron_state == RUNNING) {
-            if (data_packet_start_signal_received() && !front_hall_sensor()) {
+            if (start_received() && !front_hall_sensor()) {
+                static int i;
                 motor_voltage_set(voltage);
+                if(i % UWB_STREAM_FREQUENCY == 0){
+                    robot_notify_started();
+                }
+                i++;
             } else {
                 motor_voltage_set(0.0f);
             }
@@ -105,7 +110,11 @@ void main(unsigned int id, const char* name)
             }
         }
 
-        if (electron_state == ARRIVED || electron_state == TIMED_OUT) {
+        if (electron_state == ARRIVED) {
+            motor_voltage_set(0.0f);
+            robot_notify_arrived();
+        }
+        if (electron_state == TIMED_OUT){
             motor_voltage_set(0.0f);
         }
 

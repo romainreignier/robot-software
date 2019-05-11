@@ -32,7 +32,7 @@ int score_count_experiment(const RobotState& state)
 
 int score_count_electron(const RobotState& state)
 {
-    return state.electron_launched ? 20 : 0;
+    return state.electron_arrived ? 20 : 0;
 }
 
 static int score_count_scale_puck(PuckColor color)

@@ -324,6 +324,7 @@ void strategy_chaos_play_game(strategy_context_t* ctx, RobotState& state)
                 break;
             }
         }
+        state.electron_arrived = electron_is_arrived();
 
         strategy_wait_ms(10);
     }

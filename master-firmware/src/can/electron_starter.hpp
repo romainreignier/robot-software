@@ -4,6 +4,7 @@
 #include <uavcan/uavcan.hpp>
 
 int electron_starter_init(uavcan::INode& node);
+bool electron_is_arrived();
 
 extern "C" {
 #endif
