@@ -19,54 +19,21 @@ export CFLAGS="$CFLAGS -I $HOME/cpputest/include/"
 export CXXFLAGS="$CXXFLAGS -I $HOME/cpputest/include/"
 export LDFLAGS="$CXXFLAGS -L $HOME/cpputest/lib/"
 
-ROBOT_FLAG=""
-if [ -n "$ROBOT" ]
-then
-    ROBOT_FLAG="ROBOT=$ROBOT"
-fi
-
-
 case $BUILD_TYPE in
     tests)
-        pushd master-firmware
-        packager
-        make protoc
-        mkdir -p build
-        cd build
+        mkdir build
+        pushd build
         cmake ..
-        make check
-        popd
-
-        pushd motor-control-firmware
-        packager
-        mkdir -p build
-        cd build
-        cmake ..
-        make check
-        popd
-
-        pushd uwb-beacon-firmware
-        packager
-        mkdir -p build
-        cd build
-        cmake ..
-        make check
-        popd
-
+        make
+        make test
+        pop
         ;;
 
     build)
-        echo "build $PLATFORM"
-        pushd $PLATFORM
-        packager
-        make $ROBOT_FLAG dsdlc
-
-        if [ "$PLATFORM" == "master-firmware" ]
-        then
-            make protoc
-        fi
-
-        make $ROBOT_FLAG
+        mkdir build
+        pushd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/${PLATFORM}.cmake  -G Ninja
+        make
         popd
         ;;
     *)
