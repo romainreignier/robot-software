@@ -9,6 +9,7 @@ It is intended to be handled as part of the build, not be used interactively.
 import argparse
 import glob
 import os.path
+import re
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -21,7 +22,7 @@ def output_file(input_path: str, input_dir: str, output_path: str) -> str:
     """
     Converts an input path to an output DSDLC path
 
-    >>> output_file('foo/uavcan_data_types/cvra/Reboot.uavcan', 'foo/uavcan_data_types/cvra', 'dsdlc_generated')
+    >>> output_file('foo/uavcan_data_types/cvra/20001.Reboot.uavcan', 'foo/uavcan_data_types/cvra', 'dsdlc_generated')
     'dsdlc_generated/cvra/Reboot.hpp'
     """
     input_dir = os.path.join(*input_dir.split('/')[:-1])
@@ -31,6 +32,7 @@ def output_file(input_path: str, input_dir: str, output_path: str) -> str:
 
     # Change the extension
     path[-1] = path[-1].replace('.uavcan', '.hpp')
+    path[-1] = re.sub(r'[0-9]+\.', '', path[-1])
 
     return os.path.join(output_path, *path)
 
@@ -50,7 +52,7 @@ def main():
             output_files += [output_file(i, d, args.output_dir) for i in files]
 
     if args.output_dir:
-        print(";".join(os.path.abspath(p) for p in output_files), end='')
+        print(output_files[0], end='')
     else:
         print(";".join(os.path.abspath(p) for p in input_files), end='')
 
