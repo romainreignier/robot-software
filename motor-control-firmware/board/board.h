@@ -22,7 +22,7 @@
 
 #define STM32_LSEDRV                (3 << 3)
 
-#define STM32_HSECLK                16000000
+#define STM32_HSECLK                8000000
 
 /*
  * MCU type as defined in the ST header.
@@ -336,7 +336,7 @@
  * PC14 - GPIOC_NC_14               (input pulldown).
  * PC15 - GPIOC_NC_15               (input pulldown).
  */
-#define VAL_GPIOC_MODER             (PIN_MODE_INPUT(GPIOC_NC_13) |          \
+#define VAL_GPIOC_MODER             (PIN_MODE_OUTPUT(GPIOC_NC_13) |          \
                                      PIN_MODE_INPUT(GPIOC_NC_14) |          \
                                      PIN_MODE_INPUT(GPIOC_NC_15))
 #define VAL_GPIOC_OTYPER            (PIN_OTYPE_PUSHPULL(GPIOC_NC_13) |      \
@@ -348,7 +348,7 @@
 #define VAL_GPIOC_PUPDR             (PIN_PUPDR_PULLDOWN(GPIOC_NC_13) |      \
                                      PIN_PUPDR_PULLDOWN(GPIOC_NC_14) |      \
                                      PIN_PUPDR_PULLDOWN(GPIOC_NC_15))
-#define VAL_GPIOC_ODR               (PIN_ODR_LOW(GPIOC_NC_13) |             \
+#define VAL_GPIOC_ODR               (PIN_ODR_HIGH(GPIOC_NC_13) |             \
                                      PIN_ODR_LOW(GPIOC_NC_14) |             \
                                      PIN_ODR_LOW(GPIOC_NC_15))
 #define VAL_GPIOC_AFRL              (0)

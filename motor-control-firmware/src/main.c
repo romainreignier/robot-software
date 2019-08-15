@@ -117,6 +117,7 @@ int main(void)
 
     sdStart(&SD3, NULL);
     ch_stdout = (BaseSequentialStream*)&SD3;
+    chprintf(ch_stdout, "hello\n");
 
     parameter_namespace_declare(&parameter_root_ns, NULL, NULL);
 
@@ -152,6 +153,7 @@ int main(void)
     }
 
     while (1) {
+        palTogglePad(GPIOC, GPIOC_NC_13);
         chThdSleepMilliseconds(1000);
     }
 }
