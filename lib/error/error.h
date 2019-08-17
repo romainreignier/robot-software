@@ -76,7 +76,7 @@ const char* error_severity_get_name(uint8_t severity);
  *
  * It should be used for non recoverable errors, such as out of memory, failed
  * assertions and so on. */
-#define ERROR(text, ...)                                          \
+#define LOG_ERROR(text, ...)                                      \
     do {                                                          \
         if (g_error_fct.error) {                                  \
             struct error e = error_generate(ERROR_SEVERITY_ERROR, \
@@ -88,7 +88,7 @@ const char* error_severity_get_name(uint8_t severity);
     } while (0)
 
 /** Call this macro to log WARNING events */
-#define WARNING(text, ...)                                          \
+#define LOG_WARNING(text, ...)                                      \
     do {                                                            \
         if (g_error_fct.warning) {                                  \
             struct error e = error_generate(ERROR_SEVERITY_WARNING, \
@@ -100,7 +100,7 @@ const char* error_severity_get_name(uint8_t severity);
     } while (0)
 
 /** Call this macro to log NOTICE events */
-#define NOTICE(text, ...)                                          \
+#define LOG_NOTICE(text, ...)                                      \
     do {                                                           \
         if (g_error_fct.notice) {                                  \
             struct error e = error_generate(ERROR_SEVERITY_NOTICE, \
@@ -112,7 +112,7 @@ const char* error_severity_get_name(uint8_t severity);
     } while (0)
 
 /** Call this macro to log DEBUG events */
-#define DEBUG(text, ...)                                          \
+#define LOG_DEBUG(text, ...)                                      \
     do {                                                          \
         if (g_error_fct.debug) {                                  \
             struct error e = error_generate(ERROR_SEVERITY_DEBUG, \

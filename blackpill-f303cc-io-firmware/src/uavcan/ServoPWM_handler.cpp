@@ -10,7 +10,7 @@ void ServoPWM_handler(const uavcan::ReceivedDataStructure<cvra::io::ServoPWM>& m
     float acc[4];
 
     if (msg.node_id != config.ID) {
-        DEBUG("PWM message not addressed to us, dropping it.");
+        LOG_DEBUG("PWM message not addressed to us, dropping it.");
         return;
     }
 
@@ -20,6 +20,6 @@ void ServoPWM_handler(const uavcan::ReceivedDataStructure<cvra::io::ServoPWM>& m
         acc[i] = msg.servo_acc[i];
     }
 
-    NOTICE("Changing the PWM values: %.2f %.2f %.2f %.2f", pos[0], pos[1], pos[2], pos[3]);
+    LOG_NOTICE("Changing the PWM values: %.2f %.2f %.2f %.2f", pos[0], pos[1], pos[2], pos[3]);
     servo_set(pos, vel, acc);
 }

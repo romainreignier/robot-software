@@ -41,7 +41,7 @@ int main(void)
     chSysInit();
 
     debug_init();
-    NOTICE("boot");
+    LOG_NOTICE("boot");
 
     blinker_start();
 
@@ -52,7 +52,7 @@ int main(void)
         chSysHalt("Cannot load config");
     }
 
-    NOTICE("Board name=\"%s\", ID=%d", config.board_name, config.ID);
+    LOG_NOTICE("Board name=\"%s\", ID=%d", config.board_name, config.ID);
 
     // Never returns
     uavcan_start(config.ID, config.board_name);

@@ -72,7 +72,7 @@ void main(unsigned int id, const char* name)
 
     uavcan::Subscriber<cvra::io::ServoPWM> servo_pwm_sub(node);
     if (servo_pwm_sub.start(ServoPWM_handler)) {
-        ERROR("Cannot start servo PWM handler!");
+        LOG_ERROR("Cannot start servo PWM handler!");
     }
 
     while (true) {
