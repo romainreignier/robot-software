@@ -9,10 +9,10 @@ extern "C" {
 #include <hal.h>
 
 enum pwm_channel {
-    PWM_CHANNEL_0, // Timer 16 channel 0
-    PWM_CHANNEL_1, // Timer 17 channel 0
-    PWM_CHANNEL_2, // Timer 1 channel 1
-    PWM_CHANNEL_3, // Timer 1 channel 2
+    PWM_CHANNEL_0, // Timer 1 channel 0
+    PWM_CHANNEL_1, // Timer 1 channel 1
+    PWM_CHANNEL_2, // Timer 1 channel 2
+    PWM_CHANNEL_3, // Timer 1 channel 3
 };
 
 void pwm_init(uint32_t frequency, uint32_t period);
