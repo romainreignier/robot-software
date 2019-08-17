@@ -1,7 +1,7 @@
 #include <ch.h>
 #include <hal.h>
 #include "DigitalInput_pub.hpp"
-#include <cvra/io/DigitalInput.hpp>
+
 
 void read_inputs(bool* result)
 {
@@ -15,10 +15,14 @@ void read_inputs(bool* result)
     result[7] = palReadPad(PORT_IN7, PAD_IN7);
 }
 
-void digital_input_publish(uavcan::INode& node)
+DigitalInputPub::DigitalInputPub(uavcan::INode& node)
+: m_pub{node}
 {
-    static uavcan::Publisher<cvra::io::DigitalInput> pub(node);
+    m_pub.init();
+}
 
+void DigitalInputPub::publish()
+{
     bool values[8];
 
     read_inputs(values);
@@ -29,5 +33,5 @@ void digital_input_publish(uavcan::INode& node)
         msg.pin[i] = values[i];
     }
 
-    pub.broadcast(msg);
+    m_pub.broadcast(msg);
 }

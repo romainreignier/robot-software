@@ -3,6 +3,16 @@
 
 #include <uavcan/uavcan.hpp>
 
-void digital_input_publish(uavcan::INode& node);
+#include <cvra/io/DigitalInput.hpp>
+
+class DigitalInputPub
+{
+public:
+    DigitalInputPub(uavcan::INode& node);
+    void publish();
+
+private:
+    uavcan::Publisher<cvra::io::DigitalInput> m_pub;
+};
 
 #endif

@@ -1,11 +1,17 @@
 #include <ch.h>
 #include <hal.h>
+
+#include <uavcan/uavcan.hpp>
+#include <uavcan_stm32/uavcan_stm32.hpp>
+
 #include <error/error.h>
 #include <version/version.h>
-#include <uavcan_stm32/uavcan_stm32.hpp>
-#include <uavcan/protocol/NodeStatus.hpp>
-#include "ServoPWM_handler.hpp"
+
 #include "DigitalInput_pub.hpp"
+#include "DigitalOutput_handler.hpp"
+#include "Reboot_handler.hpp"
+#include "ServoPWM_handler.hpp"
+#include "UAVCANRestart_handler.hpp"
 
 #include "node.h"
 
@@ -63,21 +69,36 @@ void main(unsigned int id, const char* name)
 
     node.setName(name);
 
+    UAVCANRestartHandler restarter;
+    node.setRestartRequestHandler(&restarter);
+
     if (node.start() < 0) {
         chSysHalt("node start");
     }
 
-    node.getNodeStatusProvider().setModeOperational();
-    node.getNodeStatusProvider().setHealthOk();
+    node.setModeOperational();
+    node.setHealthOk();
+
+    node.getLogger().setLevel(uavcan::protocol::debug::LogLevel::DEBUG);
+    node.logInfo("main", "Hello world! My Node ID: %*",
+                 static_cast<int>(node.getNodeID().get()));
+
+    DigitalInputPub inputsPub{node};
+    DigitalOutputSub outputsSub{node};
 
     uavcan::Subscriber<cvra::io::ServoPWM> servo_pwm_sub(node);
     if (servo_pwm_sub.start(ServoPWM_handler)) {
         LOG_ERROR("Cannot start servo PWM handler!");
     }
 
+    uavcan::Subscriber<cvra::Reboot> reboot_sub(node);
+    if (reboot_sub.start(Reboot_handler)) {
+        LOG_ERROR("Cannot start reboot handler!");
+    }
+
     while (true) {
         node.spin(uavcan::MonotonicDuration::fromMSec(1000 / UAVCAN_SPIN_FREQ));
-        digital_input_publish(node);
+        inputsPub.publish();
     }
 }
 } // namespace uavcan_node
