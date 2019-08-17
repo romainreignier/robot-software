@@ -84,7 +84,7 @@ void main(unsigned int id, const char* name)
                  static_cast<int>(node.getNodeID().get()));
 
     DigitalInputPub inputsPub{node};
-    DigitalOutputSub outputsSub{node};
+    DigitalOutputSub outputsSub{node, node.getLogger()};
 
     uavcan::Subscriber<cvra::io::ServoPWM> servo_pwm_sub(node);
     if (servo_pwm_sub.start(ServoPWM_handler)) {

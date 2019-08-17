@@ -8,10 +8,11 @@
 class DigitalOutputSub
 {
 public:
-    DigitalOutputSub(uavcan::INode& node);
+    DigitalOutputSub(uavcan::INode& node, uavcan::Logger& logger);
     void callback(const uavcan::ReceivedDataStructure<cvra::io::DigitalOutput>& msg);
 
 private:
+    uavcan::Logger& m_logger;
     uavcan::Subscriber<cvra::io::DigitalOutput> m_sub;
 };
 
